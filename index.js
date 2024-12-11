@@ -24,16 +24,28 @@ const client = new MongoClient(uri, {
   },
 });
 
-const UserCollection = client.db("Vocabulary_Ninja").collection("Users");
+const UserCollection = client.db("vocabulary-ninja").collection("Users");
 
 async function run() {
   try {
     // my code
 
+    // app.post("/user", async (req, res) => {
+    //   try {
+    //     const user = req.body;
+    //     const result = await UserCollection.insertOne(user);
+    //     res.send(result);
+    //   } catch (error) {
+    //     res.send({ error, message: "user data not post", status: 500 });
+    //   }
+    // });
+
     app.post("/register", async (req, res) => {
       try {
-        const { name, email, password } = req.body;
+        const { name, email, password, phone, photo } = req.body;
+
         const existingUser = await UserCollection.findOne({ email });
+
         if (existingUser) {
           return res.send({ status: 400, message: "Email Already Existed" });
         }
@@ -42,6 +54,8 @@ async function run() {
         const newUser = {
           name,
           email,
+          photo,
+          phone,
           password: hashPassword,
           userRole: "user",
         };
@@ -125,13 +139,13 @@ async function run() {
     // Connect the client to the server	(optional starting in v4.7)
     // await client.connect();
     // Send a ping to confirm a successful connection
-    await client.db("admin").command({ ping: 1 });
+    // await client.db("admin").command({ ping: 1 });
     console.log(
       "Pinged your deployment. You successfully connected to MongoDB!"
     );
   } finally {
     // Ensures that the client will close when you finish/error
-    await client.close();
+    // await client.close();
   }
 }
 run().catch(console.dir);
